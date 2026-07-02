@@ -106,6 +106,20 @@ npm run uninstall-service
   (FTDI/Prolific)`, etc). Se a máquina tem uma placa PCIe multi-serial
   (ex: "WCH PCI Express Serial"), expanda a entrada dela — cada porta física
   da placa aparece como um item separado com seu próprio número de COM.
+- **Peso aparece errado (ex: balança com 15kg mostra 0,015 kg, ou qualquer
+  valor fora da realidade)**: o parser está interpretando errado o formato que
+  essa balança envia (cada modelo/protocolo tem um layout de bytes diferente,
+  mesmo dentro da linha Toledo). Rode em modo debug pra ver o dado bruto:
+  ```
+  npm run start:debug
+  ```
+  Coloque um peso conhecido na balança e copie as linhas que aparecerem tipo:
+  ```
+  [COM8] RAW hex=... ascii="..."
+  [COM8] LINHA="..." -> peso=...
+  ```
+  Isso mostra exatamente o que a balança está mandando, e o `toledoParser.js`
+  pode ser ajustado para esse formato específico.
 - **`Error: Opening COMx: File not found`**: essa porta não existe fisicamente
   nessa máquina. O número está errado no `config.json` — confira no
   Gerenciador de Dispositivos qual é o COM real dessa balança.

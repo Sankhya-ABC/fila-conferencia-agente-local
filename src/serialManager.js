@@ -16,6 +16,7 @@ class SerialManager extends EventEmitter {
     this._balancas = balancas;
     this._log = logger;
     this._conexoes = new Map(); // portaCom -> { port, buffer, pesoAtual }
+    this._debug = process.env.AGENTE_DEBUG === '1';
   }
 
   iniciar() {
@@ -69,11 +70,18 @@ class SerialManager extends EventEmitter {
     });
 
     port.on('data', (data) => {
+      if (this._debug) {
+        this._log.log(`[${portaCom}] RAW hex=${data.toString('hex')} ascii=${JSON.stringify(data.toString('latin1'))}`);
+      }
+
       conexao.buffer += data.toString();
       const linhas = conexao.buffer.split(/\r?\n/);
       conexao.buffer = linhas.pop() ?? '';
       for (const linha of linhas) {
         const peso = parseLinha(linha);
+        if (this._debug) {
+          this._log.log(`[${portaCom}] LINHA=${JSON.stringify(linha)} -> peso=${peso}`);
+        }
         if (peso !== null && peso >= 0) {
           conexao.pesoAtual = peso;
           this.emit('peso', { portaCom, valor: peso, estavel: true });
