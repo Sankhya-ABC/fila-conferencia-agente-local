@@ -1,0 +1,20 @@
+[
+  {
+    "nome": "Stagem Pequeno 02 - ST02",
+    "portaCom": "COM8",
+    "baudRate": 4800,
+    "dataBits": 8,
+    "paridade": "NONE",
+    "stopBits": 1,
+    "protocoloSerial": "P05"
+  },
+  {
+    "nome": "Balanca Exemplo 2",
+    "portaCom": "COM3",
+    "baudRate": 9600,
+    "dataBits": 8,
+    "paridade": "NONE",
+    "stopBits": 1,
+    "protocoloSerial": "SOB_REQUISICAO"
+  }
+]
