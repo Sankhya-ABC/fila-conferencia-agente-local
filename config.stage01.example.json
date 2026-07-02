@@ -16,23 +16,5 @@
     "paridade": "NONE",
     "stopBits": 1,
     "protocoloSerial": "P05"
-  },
-  {
-    "nome": "Stage 02 - Balanca Media ST02",
-    "portaCom": "COM7",
-    "baudRate": 4800,
-    "dataBits": 8,
-    "paridade": "NONE",
-    "stopBits": 1,
-    "protocoloSerial": "P05"
-  },
-  {
-    "nome": "Stage 02 - Balanca Pequena ST02",
-    "portaCom": "COM8",
-    "baudRate": 4800,
-    "dataBits": 8,
-    "paridade": "NONE",
-    "stopBits": 1,
-    "protocoloSerial": "P05"
   }
 ]
