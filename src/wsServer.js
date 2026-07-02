@@ -14,12 +14,12 @@ const PORT = 3099;
  *   agente  -> cliente { tipo: 'portas', valores: [...] }
  */
 function iniciarWsServer(serialManager, logger = console) {
-  const wss = new WebSocketServer({ port: PORT, host: '127.0.0.1' });
+  // "localhost" no navegador pode resolver para 127.0.0.1 (IPv4) OU ::1 (IPv6)
+  // dependendo do navegador/SO (Firefox no Windows costuma preferir IPv6).
+  // Escuta nos dois loopbacks para o navegador conseguir conectar de qualquer jeito.
+  const inscricoes = new Map(); // ws -> Set<portaCom>
 
-  // socket -> Set<portaCom> (portas as quais este cliente esta inscrito)
-  const inscricoes = new Map();
-
-  wss.on('connection', (ws) => {
+  const handleConnection = (ws) => {
     inscricoes.set(ws, new Set());
 
     ws.on('message', async (raw) => {
@@ -57,7 +57,7 @@ function iniciarWsServer(serialManager, logger = console) {
     });
 
     ws.on('close', () => inscricoes.delete(ws));
-  });
+  };
 
   const broadcast = (portaCom, payload) => {
     for (const [ws, portas] of inscricoes) {
@@ -75,8 +75,21 @@ function iniciarWsServer(serialManager, logger = console) {
     broadcast(portaCom, { tipo: 'erro', portaCom, mensagem });
   });
 
-  logger.log(`Agente local de balancas - WS server ouvindo em ws://127.0.0.1:${PORT}`);
-  return wss;
+  const wssV4 = new WebSocketServer({ port: PORT, host: '127.0.0.1' });
+  wssV4.on('connection', handleConnection);
+  wssV4.on('error', (err) => logger.error(`WS (IPv4) erro: ${err.message}`));
+
+  let wssV6 = null;
+  try {
+    wssV6 = new WebSocketServer({ port: PORT, host: '::1' });
+    wssV6.on('connection', handleConnection);
+    wssV6.on('error', (err) => logger.error(`WS (IPv6) erro: ${err.message}`));
+  } catch (err) {
+    logger.log(`IPv6 (::1) indisponivel nessa maquina, seguindo so com IPv4: ${err.message}`);
+  }
+
+  logger.log(`Agente local de balancas - WS server ouvindo em ws://127.0.0.1:${PORT} e ws://[::1]:${PORT}`);
+  return { wssV4, wssV6 };
 }
 
 module.exports = { iniciarWsServer, PORT };
