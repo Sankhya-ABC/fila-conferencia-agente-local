@@ -1,19 +1,27 @@
 {
   "name": "fila-conferencia-agente-local",
-  "version": "1.0.0",
-  "description": "Agente local que le balancas seriais (RS232/USB) fisicamente conectadas na estacao e expoe os dados via WebSocket para o frontend do Fila de Conferencia.",
+  "version": "1.0.1",
+  "description": "Agente desktop (Electron) que le balancas seriais (RS232/USB) fisicamente conectadas na estacao e expoe os dados via WebSocket para o frontend do Fila de Conferencia.",
   "private": true,
   "license": "UNLICENSED",
-  "main": "src/index.js",
+  "main": "electron/main.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "electron .",
+    "start:hidden": "electron . --hidden",
+    "start:cli": "node src/index.js",
     "start:debug": "node debug.js",
-    "install-service": "node install-service.js",
-    "uninstall-service": "node uninstall-service.js"
+    "dist:win": "electron-builder --win",
+    "legacy:install-service": "node legacy/install-service.js",
+    "legacy:uninstall-service": "node legacy/uninstall-service.js"
   },
   "dependencies": {
+    "auto-launch": "^5.0.6",
     "serialport": "^13.0.0",
     "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
   },
   "optionalDependencies": {
     "node-windows": "^1.0.0-beta.8"

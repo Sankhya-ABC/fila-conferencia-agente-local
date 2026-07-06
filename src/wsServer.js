@@ -32,10 +32,10 @@ function iniciarWsServer(serialManager, logger = console) {
 
       if (msg.tipo === 'subscribe' && msg.portaCom) {
         inscricoes.get(ws).add(msg.portaCom);
-        const pesoAtual = serialManager.pesoAtual(msg.portaCom);
+        const pesoAtual = managerAtivo.pesoAtual(msg.portaCom);
         if (pesoAtual !== null) {
           ws.send(JSON.stringify({ tipo: 'peso', portaCom: msg.portaCom, valor: pesoAtual, estavel: true }));
-        } else if (!serialManager.portasConfiguradas().includes(msg.portaCom)) {
+        } else if (!managerAtivo.portasConfiguradas().includes(msg.portaCom)) {
           ws.send(JSON.stringify({ tipo: 'erro', portaCom: msg.portaCom, mensagem: `Porta ${msg.portaCom} nao configurada no agente local.` }));
         }
         return;
@@ -67,13 +67,25 @@ function iniciarWsServer(serialManager, logger = console) {
     }
   };
 
-  serialManager.on('peso', ({ portaCom, valor, estavel }) => {
+  let managerAtivo = null;
+  const onPeso = ({ portaCom, valor, estavel }) => {
     broadcast(portaCom, { tipo: 'peso', portaCom, valor, estavel });
-  });
-
-  serialManager.on('erro', ({ portaCom, mensagem }) => {
+  };
+  const onErro = ({ portaCom, mensagem }) => {
     broadcast(portaCom, { tipo: 'erro', portaCom, mensagem });
-  });
+  };
+
+  const reatribuirSerialManager = (novoManager) => {
+    if (managerAtivo) {
+      managerAtivo.off('peso', onPeso);
+      managerAtivo.off('erro', onErro);
+    }
+    managerAtivo = novoManager;
+    managerAtivo.on('peso', onPeso);
+    managerAtivo.on('erro', onErro);
+  };
+
+  reatribuirSerialManager(serialManager);
 
   const wssV4 = new WebSocketServer({ port: PORT, host: '127.0.0.1' });
   wssV4.on('connection', handleConnection);
@@ -89,7 +101,7 @@ function iniciarWsServer(serialManager, logger = console) {
   }
 
   logger.log(`Agente local de balancas - WS server ouvindo em ws://127.0.0.1:${PORT} e ws://[::1]:${PORT}`);
-  return { wssV4, wssV6 };
+  return { wssV4, wssV6, reatribuirSerialManager };
 }
 
 module.exports = { iniciarWsServer, PORT };

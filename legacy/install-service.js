@@ -1,12 +1,16 @@
 'use strict';
 
+// DEPRECATED: substituido pelo agente desktop (Electron) com tray/auto-start.
+// Mantido apenas para migracao de estacoes que ainda rodam o modelo antigo de
+// Windows Service - veja o README para o passo a passo de migracao.
+
 const path = require('path');
 const { Service } = require('node-windows');
 
 const svc = new Service({
   name: 'FilaConferenciaAgenteBalancas',
   description: 'Agente local que le balancas seriais (COM) e expoe os dados via WebSocket para o Fila de Conferencia.',
-  script: path.join(__dirname, 'src', 'index.js'),
+  script: path.join(__dirname, '..', 'src', 'index.js'),
 });
 
 svc.on('install', () => {

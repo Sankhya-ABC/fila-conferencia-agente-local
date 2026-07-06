@@ -1,0 +1,32 @@
+appId: com.filaconferencia.agentebalanca
+productName: Agente Balanca Fila de Conferencia
+# @serialport/bindings-cpp usa N-API (ABI estavel entre versoes de Node/Electron),
+# entao nao precisa recompilar nativamente no empacotamento - evita depender de
+# Python/Visual Studio Build Tools na maquina que gera o instalador.
+npmRebuild: false
+directories:
+  output: dist
+  buildResources: build
+files:
+  - src/**/*
+  - electron/**/*
+  - renderer/**/*
+  - package.json
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: build/icon.ico
+  # Sem certificado de assinatura de codigo por enquanto - evita a etapa de
+  # signing (e o download do pacote winCodeSign, que exige privilegio de link
+  # simbolico no Windows para extrair).
+  signAndEditExecutable: false
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  runAfterFinish: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  artifactName: "agente-balanca-setup-${version}.${ext}"

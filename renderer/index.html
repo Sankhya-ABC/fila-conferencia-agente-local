@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Agente Balança - Fila de Conferência</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topo">
+    <h1>Agente Balança</h1>
+    <div class="topo-acoes">
+      <label class="checkbox-inline">
+        <input type="checkbox" id="chkAutoLaunch" />
+        Iniciar com o Windows
+      </label>
+      <button id="btnToggleAgente" class="botao botao-primario">Iniciar Agente</button>
+    </div>
+  </header>
+
+  <nav class="abas">
+    <button class="aba-btn ativo" data-aba="lista">Balanças</button>
+    <button class="aba-btn" data-aba="logs">Logs</button>
+  </nav>
+
+  <main>
+    <section id="aba-lista" class="aba-conteudo ativo">
+      <div class="acoes-lista">
+        <button id="btnNovaBalanca" class="botao botao-primario">+ Nova balança</button>
+        <button id="btnReiniciarConexoes" class="botao">Reiniciar conexões</button>
+      </div>
+      <table class="tabela-balancas">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Porta COM</th>
+            <th>Protocolo</th>
+            <th>Status</th>
+            <th>Peso atual</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="corpoTabelaBalancas"></tbody>
+      </table>
+      <p id="msgListaVazia" class="msg-vazio" hidden>Nenhuma balança cadastrada. Clique em "Nova balança" para começar.</p>
+    </section>
+
+    <section id="aba-logs" class="aba-conteudo">
+      <div class="acoes-lista">
+        <button id="btnAbrirPastaLogs" class="botao">Abrir pasta de logs</button>
+      </div>
+      <pre id="logViewer" class="log-viewer"></pre>
+    </section>
+  </main>
+
+  <!-- Modal de formulario (criar/editar balanca) -->
+  <div id="modalForm" class="modal-overlay" hidden>
+    <div class="modal">
+      <h2 id="modalTitulo">Nova balança</h2>
+      <form id="formBalanca">
+        <input type="hidden" id="fPortaComOriginal" />
+
+        <label>Nome
+          <input type="text" id="fNome" required />
+        </label>
+
+        <label>Porta COM
+          <div class="linha-com-botao">
+            <select id="fPortaCom" required></select>
+            <button type="button" id="btnAtualizarPortas" class="botao botao-pequeno">Atualizar</button>
+          </div>
+        </label>
+
+        <label>Baud Rate
+          <select id="fBaudRate">
+            <option value="1200">1200</option>
+            <option value="2400">2400</option>
+            <option value="4800" selected>4800</option>
+            <option value="9600">9600</option>
+            <option value="19200">19200</option>
+            <option value="38400">38400</option>
+            <option value="57600">57600</option>
+            <option value="115200">115200</option>
+          </select>
+        </label>
+
+        <div class="grid-2">
+          <label>Data Bits
+            <select id="fDataBits">
+              <option value="7">7</option>
+              <option value="8" selected>8</option>
+            </select>
+          </label>
+
+          <label>Paridade
+            <select id="fParidade">
+              <option value="NONE" selected>NONE</option>
+              <option value="EVEN">EVEN</option>
+              <option value="ODD">ODD</option>
+            </select>
+          </label>
+
+          <label>Stop Bits
+            <select id="fStopBits">
+              <option value="1" selected>1</option>
+              <option value="2">2</option>
+            </select>
+          </label>
+
+          <label>Timeout (ms)
+            <input type="number" id="fTimeout" value="5000" min="500" step="500" />
+          </label>
+        </div>
+
+        <label>Protocolo
+          <select id="fProtocolo">
+            <option value="P05">P05 (contínuo)</option>
+            <option value="SOB_REQUISICAO">Sob requisição</option>
+          </select>
+        </label>
+
+        <div class="teste-conexao">
+          <button type="button" id="btnTestarConexao" class="botao">Testar comunicação</button>
+          <span id="resultadoTeste"></span>
+        </div>
+
+        <div class="modal-acoes">
+          <button type="button" id="btnCancelarForm" class="botao">Cancelar</button>
+          <button type="submit" class="botao botao-primario">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>
